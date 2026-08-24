@@ -1,1 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deutschify - Platform Belajar Bahasa Jerman Interaktif</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f3e8ff 0%, #e0f2fe 50%, #fef3c7 100%);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.15);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: var(--bg-gradient); min-height: 100vh; color: var(--text-main); padding: 15px; display: flex; justify-content: center; align-items: center; }
+        .app-shell { width: 100%; max-width: 950px; background: var(--card-bg); border-radius: 28px; box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; min-height: 650px; }
+        header { background: linear-gradient(135deg, #4f46e5, #9333ea); color: white; padding: 18px 22px; display: flex; justify-content: space-between; align-items: center; }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .mascot-avatar { width: 48px; height: 48px; background: #fef08a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid white; }
+        .brand-text h1 { font-size: 18px; font-weight: 800; }
+        .brand-text p { font-size: 11px; opacity: 0.9; }
+        .progress-indicator { background: #f1f5f9; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; font-size: 12px; font-weight: 700; color: var(--text-muted); }
+        .workspace { padding: 25px; flex: 1; overflow-y: auto; }
+        .level-pills { display: flex; gap: 8px; margin-bottom: 20px; }
+        .level-pill { padding: 6px 16px; border-radius: 20px; border: 2px solid #cbd5e1; background: white; font-weight: 700; font-size: 12px; cursor: pointer; }
+        .level-pill.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .lesson-card { background: #f8fafc; border-radius: 16px; padding: 20px; margin-bottom: 20px; border-left: 6px solid var(--primary); }
+        .lesson-card h3 { font-size: 17px; color: var(--primary); margin-bottom: 8px; }
+        .lesson-card p { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 15px; }
+        .examples-box { background: white; border-radius: 12px; padding: 15px; border: 1px solid #e2e8f0; }
+        .examples-box h4 { font-size: 12px; color: #475569; margin-bottom: 10px; text-transform: uppercase; }
+        .example-item { font-size: 13px; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .example-item:last-child { border-bottom: none; }
+        .flashcard-wrapper { width: 100%; height: 200px; margin-bottom: 20px; cursor: pointer; background: linear-gradient(135deg, #ede9fe, #fae8ff); border: 2px solid #d8b4fe; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
+        .fc-word { font-size: 28px; font-weight: 800; margin: 10px 0; color: #6b21a8; }
+        .fc-hint { font-size: 11px; text-transform: uppercase; color: #7e22ce; letter-spacing: 1px; }
+        .box-container { background: #f8fafc; border-radius: 16px; padding: 22px; border: 1px solid #e2e8f0; }
+        .challenge-input { width: 100%; padding: 12px 16px; border: 2px solid #cbd5e1; border-radius: 12px; font-size: 14px; margin: 15px 0; outline: none; }
+        .quiz-question { font-size: 16px; font-weight: 700; margin-bottom: 20px; }
+        .quiz-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .quiz-opt { background: white; border: 2px solid #e2e8f0; padding: 12px 16px; border-radius: 12px; text-align: left; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .quiz-opt.correct { background: #dcfce7 !important; border-color: #22c55e !important; color: #15803d !important; }
+        .quiz-opt.wrong { background: #fee2e2 !important; border-color: #ef4444 !important; color: #b91c1c !important; }
+        .btn { background: var(--primary); color: white; border: none; padding: 12px 24px; font-size: 14px; font-weight: 700; border-radius: 12px; cursor: pointer; }
+        .btn:hover { background: var(--primary-hover); }
+        .btn-secondary { background: #e2e8f0; color: var(--text-main); }
+        .audio-btn { background: rgba(99, 102, 241, 0.1); color: var(--primary); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <header>
+            <div class="brand">
+                <div class="mascot-avatar">🦉</div>
+                <div class="brand-text">
+                    <h1>Deutschify</h1>
+                    <p>Kurikulum Netzwerk neu Berkelanjutan bersama Maxi!</p>
+                </div>
+            </div>
+            <div id="level-badge" style="font-size: 12px; font-weight: 700; background: rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 20px;">Level: A1</div>
+        </header>
+        <div class="progress-indicator">
+            <span id="step-info">Langkah 1: Materi Pembelajaran</span>
+            <span id="topic-counter">Topik 1 dari 4</span>
+        </div>
+        <div class="workspace" id="workspace"></div>
+    </div>
+
+    <script>
+        const curriculum = {
+            A1: [
+                {
+                    topicName: "1. Begrüßungen & W-Fragen",
+                    grammatik: {
+                        title: "Sapaan dan Kata Tanya Dasar (W-Fragen)",
+                        desc: "Mempelajari cara menyapa orang lain serta menggunakan kata tanya berawalan huruf W.",
+                        examples: [
+                            { de: "Guten Tag, wie heißen Sie?", id: "Selamat siang, siapa nama Anda?", note: "Sapaan formal" },
+                            { de: "Wer bist du?", id: "Siapa kamu?", note: "Kata tanya 'Wer'" },
+                            { de: "Woher kommst du?", id: "Dari mana kamu berasal?", note: "Asal tempat" },
+                            { de: "Was machst du heute?", id: "Apa yang kamu kerjakan?", note: "Kata tanya 'Was'" },
+                            { de: "Wie geht es dir?", id: "Bagaimana kabarmu?", note: "Menanyakan kabar" }
+                        ]
+                    },
+                    vocab: [{ de: "der Name", id: "Nama" }, { de: "die Stadt", id: "Kota" }, { de: "kommen", id: "Datang" }, { de: "wohnen", id: "Tinggal" }],
+                    quiz: [
+                        { q: "Apa arti kata tanya 'Wer'?", options: ["Apa", "Siapa", "Di mana", "Bagaimana"], correct: 1 },
+                        { q: "Kalimat mana yang menanyakan asal tempat?", options: ["Wie geht es dir?", "Woher kommst du?", "Was machst du?", "Wer bist du?"], correct: 1 }
+                    ]
+                },
+                {
+                    topicName: "2. Nominativ (der, die, das)",
+                    grammatik: {
+                        title: "Kasus Nominativ & Artikel Dasar",
+                        desc: "Nominativ digunakan untuk subjek kalimat dengan pembagian gender artikel.",
+                        examples: [
+                            { de: "Das ist der Tisch.", id: "Itu adalah meja.", note: "Maskulin" },
+                            { de: "Die Lampe ist neu.", id: "Lampu itu baru.", note: "Feminin" },
+                            { de: "Das Buch ist interessant.", id: "Buku itu menarik.", note: "Netral" },
+                            { de: "Ein Mann arbeitet hier.", id: "Seorang pria bekerja di sini.", note: "Artikel tak tentu" },
+                            { de: "Eine Frau liest.", id: "Seorang wanita membaca.", note: "Feminin tak tentu" }
+                        ]
+                    },
+                    vocab: [{ de: "der Tisch", id: "Meja" }, { de: "die Lampe", id: "Lampu" }, { de: "das Buch", id: "Buku" }, { de: "der Mann", id: "Pria" }],
+                    quiz: [
+                        { q: "Artikel definit untuk kata 'Tisch' (maskulin) adalah...", options: ["die", "das", "der", "den"], correct: 2 },
+                        { q: "Kasus untuk subjek kalimat adalah...", options: ["Akkusativ", "Nominativ", "Dativ", "Genitiv"], correct: 1 }
+                    ]
+                }
+            ]
+        };
+
+        let currentLevel = 'A1';
+        let topicIndex = 0;
+        let step = 1;
+        let fcIdx = 0;
+        let isFlipped = false;
+        let chIndex = 0;
+        let chScore = 0;
+        let qIndex = 0;
+        let qScore = 0;
+        let answered = false;
+
+        function setLevel(lvl) {
+            currentLevel = lvl;
+            topicIndex = 0; step = 1; fcIdx = 0; chIndex = 0; chScore = 0; qIndex = 0; qScore = 0; answered = false;
+            document.getElementById('level-badge').innerText = `Level: ${lvl}`;
+            renderWorkspace();
+        }
+
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = 'de-DE';
+                window.speechSynthesis.speak(u);
+            }
+        }
+
+        function renderWorkspace() {
+            const ws = document.getElementById('workspace');
+            if (!ws) return;
+            const topics = curriculum[currentLevel];
+            const currentTopic = topics[topicIndex];
+
+            const stepNames = ["1. Materi Pembelajaran", "2. Flashcards Kosakata", "3. Uji Prasyarat (Min. 60%)", "4. Quiz Evaluasi (Min. 80%)"];
+            document.getElementById('step-info').innerText = stepNames[step - 1];
+            document.getElementById('topic-counter').innerText = `Topik ${topicIndex + 1} dari ${topics.length}`;
+
+            let levelPillsHTML = `
+                <div class="level-pills">
+                    <button class="level-pill ${currentLevel === 'A1' ? 'active' : ''}" onclick="setLevel('A1')">Level A1</button>
+                    <button class="level-pill ${currentLevel === 'A2' ? 'active' : ''}" onclick="setLevel('A2')">Level A2</button>
+                    <button class="level-pill ${currentLevel === 'B1' ? 'active' : ''}" onclick="setLevel('B1')">Level B1</button>
+                </div>
+            `;
+
+            if (step === 1) {
+                let exHTML = currentTopic.grammatik.examples.map(ex => `
+                    <div class="example-item">
+                        <div><strong>${ex.de}</strong> <span style="color:var(--text-muted); font-size:12px;">(${ex.id})</span><br><span style="font-size:11px; color:#4f46e5;">💡 ${ex.note}</span></div>
+                        <button class="audio-btn" onclick="speakText('${ex.de.replace(/[^a-zA-ZäöüßÄÖÜ ]/g, '')}')">🔊</button>
+                    </div>
+                `).join('');
+
+                ws.innerHTML = `${levelPillsHTML}<div class="lesson-card"><h3>📖 ${currentTopic.topicName}: ${currentTopic.grammatik.title}</h3><p>${currentTopic.grammatik.desc}</p><div class="examples-box"><h4>Contoh Kalimat:</h4>${exHTML}</div></div><div style="text-align: right;"><button class="btn" onclick="nextStep()">Lanjut ke Flashcards →</button></div>`;
+            } else if (step === 2) {
+                const fc = currentTopic.vocab[fcIdx];
+                ws.innerHTML = `${levelPillsHTML}<div style="font-weight:700; color:var(--primary); margin-bottom:12px;">⚡ Flashcard (${fcIdx + 1} / ${currentTopic.vocab.length})</div><div class="flashcard-wrapper" onclick="toggleCard()"><div class="fc-hint">${isFlipped ? 'Arti Indonesia' : 'Jerman (Klik)'}</div><div class="fc-word">${isFlipped ? fc.id : fc.de}</div>${!isFlipped ? `<button class="audio-btn" onclick="event.stopPropagation(); speakText('${fc.de.split(',')[0]}')">🔊</button>` : ''}</div><div style="display:flex; justify-content:space-between;"><button class="btn btn-secondary" onclick="prevCard()">←</button><button class="btn" onclick="nextCard()">→</button></div>`;
+            } else if (step === 3) {
+                ws.innerHTML = `${levelPillsHTML}<div class="box-container"><div style="font-size:12px; font-weight:700; color:var(--warning); margin-bottom:8px;">✍️ Uji Prasyarat (Min. 60%)</div><div style="font-size:16px; font-weight:700; margin-bottom:12px;">Arti bahasa Indonesia untuk: <span style="color:var(--primary);">${currentTopic.vocab[chIndex].de}</span></div><input type="text" id="ch-ans" class="challenge-input" placeholder="Ketik arti..."><br><button class="btn" onclick="submitChallenge()">Periksa</button></div>`;
+            } else if (step === 4) {
+                if (qIndex < currentTopic.quiz.length) {
+                    const q = currentTopic.quiz[qIndex];
+                    let opts = q.options.map((opt, i) => `<button class="quiz-opt" id="q-opt-${i}" onclick="checkQuiz(${i})">${opt}</button>`).join('');
+                    ws.innerHTML = `${levelPillsHTML}<div class="box-container"><div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">Soal ${qIndex + 1} dari ${currentTopic.quiz.length}</div><div class="quiz-question">${q.q}</div><div class="quiz-options">${opts}</div><button class="btn" id="next-q-btn" style="display:none; width:100%;" onclick="nextQuizQuestion()">Selanjutnya →</button></div>`;
+                } else {
+                    let finalScore = (qScore / currentTopic.quiz.length) * 100;
+                    let passed = finalScore >= 80;
+                    ws.innerHTML = `${levelPillsHTML}<div class="box-container" style="text-align:center; padding: 30px;"><div style="font-size:45px; margin-bottom:10px;">${passed ? '🎉' : '📚'}</div><h2 style="color:var(--primary); margin-bottom:8px;">Evaluasi Selesai</h2><p style="font-size:22px; font-weight:800; color:${passed ? 'var(--success)' : 'var(--accent)'}; margin-bottom:12px;">Skor: ${finalScore}%</p><button class="btn" onclick="${passed ? 'advanceTopic()' : 'retryTopic()'}">${passed ? 'Lanjut ke Topik Berikutnya 🚀' : 'Ulangi 🔄'}</button></div>`;
+                }
+            }
+        }
+
+        function nextStep() { step++; renderWorkspace(); }
+        function toggleCard() { isFlipped = !isFlipped; renderWorkspace(); }
+        function nextCard() {
+            isFlipped = false;
+            const vocabLen = curriculum[currentLevel][topicIndex].vocab.length;
+            if (fcIdx < vocabLen - 1) { fcIdx++; renderWorkspace(); }
+            else { step = 3; renderWorkspace(); }
+        }
+        function prevCard() { isFlipped = false; if (fcIdx > 0) fcIdx--; renderWorkspace(); }
+
+        function submitChallenge() {
+            const val = document.getElementById('ch-ans').value.trim().toLowerCase();
+            const correctAns = curriculum[currentLevel][topicIndex].vocab[chIndex].id.toLowerCase();
+            if (val === correctAns) { alert("✨ Benar!"); chScore++; }
+            else { alert(`❌ Salah. Jawabannya: "${curriculum[currentLevel][topicIndex].vocab[chIndex].id}"`); }
+            chIndex++;
+            const vocabLen = curriculum[currentLevel][topicIndex].vocab.length;
+            if (chIndex < vocabLen) { renderWorkspace(); }
+            else {
+                let threshold = 0.6 * vocabLen;
+                if (chScore >= threshold) { alert(`🏆 Prasyarat tercapai! Membuka Quiz.`); step = 4; renderWorkspace(); }
+                else { alert(`⚠️ Belum cukup. Minimal 60%. Ulangi!`); chIndex = 0; chScore = 0; renderWorkspace(); }
+            }
+        }
+
+        function checkQuiz(i) {
+            if (answered) return;
+            answered = true;
+            const q = curriculum[currentLevel][topicIndex].quiz[qIndex];
+            document.getElementById(`q-opt-${q.correct}`).classList.add('correct');
+            if (i !== q.correct) document.getElementById(`q-opt-${i}`).classList.add('wrong');
+            else qScore++;
+            document.getElementById('next-q-btn').style.display = 'block';
+        }
+
+        function nextQuizQuestion() { answered = false; qIndex++; renderWorkspace(); }
+
+        function advanceTopic() {
+            const totalTopics = curriculum[currentLevel].length;
+            if (topicIndex < totalTopics - 1) {
+                topicIndex++; step = 1; fcIdx = 0; isFlipped = false; chIndex = 0; chScore = 0; qIndex = 0; qScore = 0; answered = false;
+                renderWorkspace();
+            } else { alert("🎉 Selesai seluruh topik level ini!"); }
+        }
+
+        function retryTopic() { step = 1; fcIdx = 0; chIndex = 0; chScore = 0; qIndex = 0; qScore = 0; answered = false; renderWorkspace(); }
+
+        renderWorkspace();
+    </script>
+</body>
+  </html>
 
